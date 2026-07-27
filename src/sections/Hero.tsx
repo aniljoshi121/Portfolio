@@ -32,7 +32,12 @@ export function Hero() {
     return () => ctx.revert()
   }, [])
 
+  const canHover = () =>
+    typeof window !== "undefined" &&
+    window.matchMedia("(hover: hover) and (pointer: fine)").matches
+
   const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!canHover()) return
     const btn = e.currentTarget
     const rect = btn.getBoundingClientRect()
     const x = e.clientX - rect.left - rect.width / 2
@@ -41,6 +46,7 @@ export function Hero() {
   }
 
   const handleMouseLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (!canHover()) return
     gsap.to(e.currentTarget, { x: 0, y: 0, duration: 0.4, ease: "elastic.out(1, 0.4)" })
   }
 

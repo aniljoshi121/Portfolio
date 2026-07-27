@@ -19,7 +19,6 @@ export function ScrollSpider() {
       )
     }
 
-    // Idle swing — runs continuously, independent of scroll
     const swingTl = gsap.to(currentAngle, {
       current: 14,
       duration: 0.7,
@@ -53,10 +52,10 @@ export function ScrollSpider() {
       window.removeEventListener("scroll", onScroll)
       swingTl.kill()
     }
-  }, []) // <-- runs once, never restarts
+  }, [])
 
   return (
-    <div className="pointer-events-none fixed right-8 top-0 z-40 hidden sm:flex sm:flex-col sm:items-center">
+    <div className="pointer-events-none fixed right-4 top-0 z-40 flex flex-col items-center sm:right-8">
       <svg ref={svgRef} width="28" height="0" style={{ overflow: "visible", display: "block" }}>
         <defs>
           <linearGradient id="threadSheen" x1="0" y1="0" x2="0" y2="1">
@@ -75,7 +74,7 @@ export function ScrollSpider() {
       </svg>
       <div
         ref={spiderRef}
-        className="w-28 overflow-hidden rounded-md"
+        className="w-16 overflow-hidden rounded-md sm:w-28"
         style={{ mixBlendMode: "screen", transformOrigin: "top center" }}
       >
         <video
