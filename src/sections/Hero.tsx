@@ -50,6 +50,25 @@ export function Hero() {
     gsap.to(e.currentTarget, { x: 0, y: 0, duration: 0.4, ease: "elastic.out(1, 0.4)" })
   }
 
+  const handleTouchStart = (e: React.TouchEvent<HTMLButtonElement>) => {
+    gsap.to(e.currentTarget, {
+      scale: 0.95,
+      backgroundColor: "#dc2626",
+      color: "#ffffff",
+      duration: 0.15,
+    })
+  }
+
+  const handleTouchEnd = (e: React.TouchEvent<HTMLButtonElement>) => {
+    gsap.to(e.currentTarget, {
+      scale: 1,
+      backgroundColor: "transparent",
+      color: "#ef4444",
+      duration: 0.25,
+      delay: 0.1,
+    })
+  }
+
   return (
     <section className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden px-6 text-center">
       <Suspense fallback={null}>
@@ -99,7 +118,9 @@ export function Hero() {
         data-cursor="View"
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        className="relative z-10 mt-10 cursor-pointer border-2 border-red-500 px-8 py-3 uppercase italic tracking-wide text-red-500 transition-colors hover:bg-red-500 hover:text-white"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+        className="relative z-10 mt-10 cursor-pointer border-2 border-red-500 px-8 py-3 uppercase italic tracking-wide text-red-500 transition-colors active:bg-red-500 active:text-white hover:bg-red-500 hover:text-white"
         style={{ fontFamily: "'Passion One', sans-serif", fontWeight: 700 }}
       >
         View My Work

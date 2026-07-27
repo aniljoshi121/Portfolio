@@ -55,7 +55,7 @@ export function ScrollSpider() {
   }, [])
 
   return (
-    <div className="pointer-events-none fixed right-4 top-0 z-40 flex flex-col items-center sm:right-8">
+    <div className="pointer-events-none fixed right-4 top-16 z-40 flex flex-col items-center sm:right-8 sm:top-0">
       <svg ref={svgRef} width="28" height="0" style={{ overflow: "visible", display: "block" }}>
         <defs>
           <linearGradient id="threadSheen" x1="0" y1="0" x2="0" y2="1">
@@ -75,7 +75,14 @@ export function ScrollSpider() {
       <div
         ref={spiderRef}
         className="w-16 overflow-hidden rounded-md sm:w-28"
-        style={{ mixBlendMode: "screen", transformOrigin: "top center" }}
+        style={{
+          mixBlendMode: "screen",
+          transformOrigin: "top center",
+          WebkitMaskImage:
+            "radial-gradient(ellipse 70% 70% at 50% 45%, black 40%, transparent 85%)",
+          maskImage:
+            "radial-gradient(ellipse 70% 70% at 50% 45%, black 40%, transparent 85%)",
+        }}
       >
         <video
           src="/spider-noir.mp4"
