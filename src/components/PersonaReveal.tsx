@@ -7,20 +7,42 @@ export function PersonaReveal() {
   const containerRef = useRef<HTMLDivElement>(null)
   const maskRef = useRef<HTMLDivElement>(null)
 
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const updateMask = (clientX: number, clientY: number) => {
     const rect = containerRef.current?.getBoundingClientRect()
     if (!rect || !maskRef.current) return
 
-    const x = ((e.clientX - rect.left) / rect.width) * 100
-    const y = ((e.clientY - rect.top) / rect.height) * 100
+    const x = ((clientX - rect.left) / rect.width) * 100
+    const y = ((clientY - rect.top) / rect.height) * 100
 
     maskRef.current.style.setProperty("--x", `${x}%`)
     maskRef.current.style.setProperty("--y", `${y}%`)
     maskRef.current.style.opacity = "1"
   }
 
-  const handleMouseLeave = () => {
+  const hideMask = () => {
     if (maskRef.current) maskRef.current.style.opacity = "0"
+  }
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    updateMask(e.clientX, e.clientY)
+  }
+
+  const handleMouseLeave = () => {
+    hideMask()
+  }
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    const touch = e.touches[0]
+    if (touch) updateMask(touch.clientX, touch.clientY)
+  }
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    const touch = e.touches[0]
+    if (touch) updateMask(touch.clientX, touch.clientY)
+  }
+
+  const handleTouchEnd = () => {
+    hideMask()
   }
 
   return (
@@ -28,6 +50,9 @@ export function PersonaReveal() {
       ref={containerRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       className="relative mx-auto flex aspect-square w-full max-w-md items-center justify-center sm:max-w-lg"
     >
       <div className="relative h-full w-full overflow-hidden rounded-full">
@@ -38,7 +63,7 @@ export function PersonaReveal() {
           className="h-full w-full object-cover object-[center_15%] grayscale"
         />
 
-        {/* Reveal photo (formal), masked to a circle that follows the cursor */}
+        {/* Reveal photo (formal), masked to a circle that follows the cursor/touch */}
         <div
           ref={maskRef}
           className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300"
@@ -50,10 +75,10 @@ export function PersonaReveal() {
           }}
         >
           <img
-  src={REVEAL_IMAGE}
-  alt="Portrait alternate"
-  className="h-full w-full scale-190 object-cover object-[center_25%] grayscale"
-/>
+            src={REVEAL_IMAGE}
+            alt="Portrait alternate"
+            className="h-full w-full scale-190 object-cover object-[center_25%] grayscale"
+          />
         </div>
       </div>
 
