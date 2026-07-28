@@ -27,7 +27,7 @@ export function Loader({ onComplete }: { onComplete: () => void }) {
 
     tl.to(counter, {
       value: 100,
-      duration: 8, // temporarily slowed down for testing — change back to 2 once confirmed
+      duration: 4,
       ease: "power2.inOut",
       onUpdate: () => setProgress(Math.floor(counter.value)),
     })
@@ -38,7 +38,15 @@ export function Loader({ onComplete }: { onComplete: () => void }) {
       ref={loaderRef}
       className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-background"
     >
-      <div className="text-2xl font-semibold tracking-tight">Anil Joshi</div>
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="h-65 w-65 object-contain sm:h-96 sm:w-96"
+        src="/loader-video.mp4"
+      />
+      <div className="mt-6 text-2xl font-semibold tracking-tight">Namaste</div>
       <div className="mt-6 text-sm text-muted-foreground">{progress}%</div>
       <div className="mt-4 h-px w-40 overflow-hidden bg-border">
         <div

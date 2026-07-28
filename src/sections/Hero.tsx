@@ -1,32 +1,56 @@
-import { useEffect, useRef, lazy, Suspense } from "react"
+import { useEffect, useRef } from "react"
 import { gsap } from "gsap"
+import { motion, useScroll, useTransform, type MotionValue } from "framer-motion"
 import { PersonaReveal } from "@/components/PersonaReveal"
 
-const HeroCanvas = lazy(() => import("@/components/HeroCanvas"))
+function NameCharacter({
+  char,
+  index,
+  centerIndex,
+  scrollYProgress,
+}: {
+  char: string
+  index: number
+  centerIndex: number
+  scrollYProgress: MotionValue<number>
+}) {
+  const isSpace = char === " "
+  const distanceFromCenter = index - centerIndex
+
+  const x = useTransform(scrollYProgress, [0, 0.4], [distanceFromCenter * 40, 0])
+  const rotateX = useTransform(scrollYProgress, [0, 0.4], [distanceFromCenter * 30, 0])
+  const opacity = useTransform(scrollYProgress, [0, 0.3], [0, 1])
+
+  return (
+    <motion.span
+      className={`inline-block ${isSpace ? "w-4 sm:w-8" : ""}`}
+      style={{ x, rotateX, opacity }}
+    >
+      {char}
+    </motion.span>
+  )
+}
 
 export function Hero() {
-  const nameRef = useRef<HTMLHeadingElement>(null)
+  const heroRef = useRef<HTMLElement>(null)
   const subRef = useRef<HTMLParagraphElement>(null)
   const ctaRef = useRef<HTMLButtonElement>(null)
 
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  })
+
+  const name = "Anil Joshi"
+  const characters = name.split("")
+  const centerIndex = Math.floor(characters.length / 2)
+
   useEffect(() => {
     const ctx = gsap.context(() => {
-      if (!nameRef.current) return
-
-      const text = nameRef.current.textContent ?? ""
-      nameRef.current.innerHTML = text
-        .split("")
-        .map((char) =>
-          char === " " ? " " : `<span class="inline-block opacity-0 translate-y-8">${char}</span>`
-        )
-        .join("")
-
-      const chars = nameRef.current.querySelectorAll("span")
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } })
 
-      tl.to(chars, { opacity: 1, y: 0, duration: 0.8, stagger: 0.03 })
-        .fromTo(subRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6 }, "-=0.3")
-        .fromTo(ctaRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6 }, "-=0.4")
+      tl.fromTo(subRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6 })
+        .fromTo(ctaRef.current, { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6 }, "-=0.3")
     })
 
     return () => ctx.revert()
@@ -69,17 +93,15 @@ export function Hero() {
     })
   }
 
+  const scrollToProjects = () => {
+    document.getElementById("projects")?.scrollIntoView({ behavior: "smooth" })
+  }
+
   return (
-    <section className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden px-6 text-center">
-      <Suspense fallback={null}>
-        <HeroCanvas />
-      </Suspense>
-
-      <div
-        className="pointer-events-none absolute inset-0 opacity-30"
-        style={{ background: "radial-gradient(circle at 50% 40%, var(--accent) 0%, transparent 60%)" }}
-      />
-
+    <section
+      ref={heroRef}
+      className="relative flex min-h-screen w-full flex-col items-center justify-center overflow-hidden px-6 pt-24 text-center sm:pt-32"
+    >
       <PersonaReveal />
 
       <p
@@ -90,7 +112,6 @@ export function Hero() {
       </p>
 
       <h1
-        ref={nameRef}
         className="relative z-10 mt-4 text-[clamp(2.5rem,14vw,10rem)] uppercase leading-none -skew-x-6"
         style={{
           fontFamily: "'Anton', sans-serif",
@@ -104,9 +125,18 @@ export function Hero() {
             1px 1px 0 #dc2626,
             6px 6px 12px rgba(0,0,0,0.5)
           `,
+          perspective: "600px",
         }}
       >
-        Anil Joshi
+        {characters.map((char, index) => (
+          <NameCharacter
+            key={index}
+            char={char}
+            index={index}
+            centerIndex={centerIndex}
+            scrollYProgress={scrollYProgress}
+          />
+        ))}
       </h1>
 
       <p ref={subRef} className="relative z-10 mt-6 max-w-xl px-4 text-base text-muted-foreground sm:text-lg">
@@ -120,6 +150,7 @@ export function Hero() {
         onMouseLeave={handleMouseLeave}
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
+        onClick={scrollToProjects}
         className="relative z-10 mt-10 cursor-pointer border-2 border-red-500 px-8 py-3 uppercase italic tracking-wide text-red-500 transition-colors active:bg-red-500 active:text-white hover:bg-red-500 hover:text-white"
         style={{ fontFamily: "'Passion One', sans-serif", fontWeight: 700 }}
       >
